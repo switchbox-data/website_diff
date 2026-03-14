@@ -1,10 +1,10 @@
 [build-system]
-requires = ["maturin>=1.5,<2.0"]
-build-backend = "maturin"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "website_diff"
-version = "0.1.0"
+version = "0.2.0"
 description = "A simple tool for producing navigable, highlighted diffs of rendered HTML websites"
 requires-python = ">=3.9"
 readme = "README.md"
@@ -21,10 +21,8 @@ dependencies = [
     "vl-convert-python",
     "selenium",
     "cairosvg",
-    "maturin"
 ]
 classifiers = [
-    "Programming Language :: Rust",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
@@ -32,10 +30,5 @@ classifiers = [
 [project.scripts]
 website_diff = "website_diff.cli:main"
 
-[tool.setuptools]
-package-data = {"website_diff" = ["*.css", "*.js"]}
-
-[tool.maturin]
-features = ["pyo3/extension-module"]
-module-name = "website_diff.htmldiff"
-
+[tool.hatch.build.targets.wheel]
+packages = ["website_diff"]
