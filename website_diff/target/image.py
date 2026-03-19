@@ -9,6 +9,7 @@ def diff(filepath_old, filepath_new, filepath_out):
     if not _img_exists(filepath_old, filepath_new):
         return False
 
+    os.makedirs(os.path.dirname(filepath_out), exist_ok=True)
     img_old = Image.open(filepath_old).convert("RGB")
     img_new = Image.open(filepath_new).convert("RGB")
     img_diff = ImageChops.difference(img_old, img_new)
@@ -44,6 +45,7 @@ def highlight_del(filepath, filepath_out):
     _highlight_image(filepath, filepath_out, "firebrick", 0.5)
 
 def _highlight_image(filepath, filepath_out, color, alpha):
+    os.makedirs(os.path.dirname(filepath_out), exist_ok=True)
     img = Image.open(filepath)
     bw = img.convert("LA").convert("RGBA")
     overlay = Image.new("RGBA", img.size, color = color)

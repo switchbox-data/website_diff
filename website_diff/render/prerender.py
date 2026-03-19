@@ -32,6 +32,9 @@ def _prerender_pages(dir, pages, selector):
 
         soup = BeautifulSoup(html, 'html.parser')
 
+        # Render inline SVGs to PNGs
+        wd.render.svg.render(filepath, 'prerendered', soup, selector)
+
         # Render altair visualizations
         wd.render.altair.render(filepath, 'prerendered', soup, selector)
 
