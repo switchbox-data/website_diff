@@ -79,6 +79,7 @@ def render(rootdir: str, relpath: str, soup: BeautifulSoup, selector: str) -> No
         )
 
     page_dir = os.path.dirname(rootdir)
+    page_stem = os.path.splitext(os.path.basename(rootdir))[0]
     out_dir = os.path.join(page_dir, relpath)
     os.makedirs(out_dir, exist_ok=True)
 
@@ -94,15 +95,11 @@ def render(rootdir: str, relpath: str, soup: BeautifulSoup, selector: str) -> No
 
         fig_id = _fig_id_from_raw(raw_svg, raw_html)
         if fig_id:
-            png_name = f"{fig_id}.png"
+            png_name = f"{fig_id}_{page_stem}.png"
         else:
-            png_name = f"inline_svg_{i}.png"
+            png_name = f"inline_svg_{page_stem}_{i}.png"
 
         png_path = os.path.join(out_dir, png_name)
-
-        if os.path.exists(png_path):
-            png_name = f"{os.path.splitext(png_name)[0]}_{i}.png"
-            png_path = os.path.join(out_dir, png_name)
 
         try:
             cairosvg.svg2png(
