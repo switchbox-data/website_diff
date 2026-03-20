@@ -24,6 +24,12 @@ _MIN_VIEWBOX_WIDTH = 100
 
 _SVG_BLOCK_RE = re.compile(r"<svg\b[^>]*>.*?</svg>", re.DOTALL)
 
+# Browser-only CSS properties on the <svg> tag that confuse cairosvg
+# (e.g. height:auto → zero height → invisible output).
+_BROWSER_STYLE_RE = re.compile(r'\s*style="[^"]*"')
+_BROWSER_CLASS_RE = re.compile(r'\s*class="[^"]*"')
+_BROWSER_ROLE_RE = re.compile(r'\s*role="[^"]*"')
+
 
 def _viewbox_width_from_raw(svg_text: str) -> float | None:
     """Extract viewBox width from raw SVG markup (case-preserving)."""
@@ -101,9 +107,15 @@ def render(rootdir: str, relpath: str, soup: BeautifulSoup, selector: str) -> No
 
         png_path = os.path.join(out_dir, png_name)
 
+        # Strip browser-only attributes from the <svg> tag before rasterizing.
+        # height:auto in inline style causes cairosvg to compute zero height.
+        svg_for_render = _BROWSER_STYLE_RE.sub("", raw_svg, count=1)
+        svg_for_render = _BROWSER_CLASS_RE.sub("", svg_for_render, count=1)
+        svg_for_render = _BROWSER_ROLE_RE.sub("", svg_for_render, count=1)
+
         try:
             cairosvg.svg2png(
-                bytestring=raw_svg.encode("utf-8"),
+                bytestring=svg_for_render.encode("utf-8"),
                 write_to=png_path,
                 output_width=int(vb_width * 2) if vb_width else None,
             )
