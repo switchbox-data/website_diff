@@ -31,10 +31,14 @@ def _merge_diffs(elem, soup):
         else:
             continue
 
+    # Recursive _merge_diffs may decompose children (ins/del cleanup), leaving the parent empty.
+    if not elem.contents:
+        return
+
     # If there is only an ins or del element left in children, then propagate that ins or del tag
     # onto the parent element
     child = elem.contents[0]
-    if len(elem.contents) == 1 and child.name in ['ins', 'del']:
+    if len(elem.contents) == 1 and isinstance(child, bs4.element.Tag) and child.name in ['ins', 'del']:
         new_elem = soup.new_tag(child.name)
         elem.wrap(new_elem)
         child.unwrap()
